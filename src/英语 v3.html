@@ -1,0 +1,168 @@
+import React, { useState } from 'react';
+import { Home, BookOpen, Mic, PieChart, User, Flame, ChevronRight, Wand2, Volume2, Languages, Play } from 'lucide-react';
+
+// --- 模拟状态栏 ---
+const StatusBar = () => (
+  <div className="flex justify-between items-end px-8 pt-5 pb-2 text-xs font-semibold bg-white/80 backdrop-blur-md sticky top-0 z-50 h-[54px]">
+    <span>9:41</span>
+    <div className="flex gap-1.5">
+      <div className="w-4 h-4 bg-black rounded-sm flex items-center justify-center text-[8px] text-white">5G</div>
+      <div className="w-5 h-2.5 border border-black/20 rounded-sm relative">
+        <div className="absolute left-0 top-0 h-full bg-black w-[80%] rounded-px"></div>
+      </div>
+    </div>
+  </div>
+);
+
+// --- 底部导航栏 ---
+const TabBar = ({ activeTab }: { activeTab: string }) => (
+  <div className="absolute bottom-0 w-full h-[90px] bg-white/95 backdrop-blur-xl border-t border-gray-100 flex justify-around items-start pt-3 z-50 pb-8">
+    <div className={`flex flex-col items-center gap-1 ${activeTab === 'home' ? 'text-indigo-600' : 'text-gray-400'}`}>
+      <Home size={22} />
+      <span className="text-[10px] font-bold">首页</span>
+    </div>
+    <div className="flex flex-col items-center gap-1 text-gray-400">
+      <BookOpen size={22} />
+      <span className="text-[10px] font-bold">课程</span>
+    </div>
+    <div className="relative -top-7">
+      <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-300 text-white border-4 border-white transition-transform active:scale-90">
+        <Mic size={28} fill="currentColor" />
+      </div>
+    </div>
+    <div className="flex flex-col items-center gap-1 text-gray-400">
+      <PieChart size={22} />
+      <span className="text-[10px] font-bold">复习</span>
+    </div>
+    <div className={`flex flex-col items-center gap-1 ${activeTab === 'profile' ? 'text-indigo-600' : 'text-gray-400'}`}>
+      <User size={22} />
+      <span className="text-[10px] font-bold">我的</span>
+    </div>
+  </div>
+);
+
+// ================= 页面组件 =================
+
+// 1. 首页组件
+const HomePage = () => (
+  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="px-6 pt-4 flex justify-between items-center">
+      <h1 className="text-2xl font-black text-slate-900 tracking-tight">SpeakFlow AI</h1>
+      <div className="bg-orange-50 text-orange-600 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5">
+        <Flame size={14} fill="currentColor" />
+        <span>12 天连胜</span>
+      </div>
+    </div>
+    
+    <div className="px-6 mt-6">
+      <div className="bg-indigo-600 rounded-[32px] p-6 text-white shadow-xl shadow-indigo-100 relative overflow-hidden group">
+        <div className="relative z-10">
+          <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">今日必学</span>
+          <h3 className="text-xl font-bold mt-2">商务英语：模拟面试</h3>
+          <p className="text-indigo-100/80 text-xs mt-1 leading-relaxed">用 15 分钟时间练习如何回答 <br/>"What is your strength?"</p>
+          <button className="mt-5 bg-white text-indigo-600 w-full py-3 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2 group-active:scale-95 transition-transform">
+            开始练习 <Play size={14} fill="currentColor" />
+          </button>
+        </div>
+        <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+      </div>
+    </div>
+
+    <div className="px-6 mt-8">
+      <h2 className="font-bold text-lg mb-4 text-slate-800">热门场景</h2>
+      <div className="grid grid-cols-2 gap-4">
+        {[
+          { title: '雅思口语', icon: '🎓', color: 'bg-blue-50' },
+          { title: '咖啡馆点餐', icon: '☕️', color: 'bg-orange-50' },
+          { title: '机场办理', icon: '✈️', color: 'bg-purple-50' },
+          { title: '职场汇报', icon: '💼', color: 'bg-green-50' },
+        ].map((item, i) => (
+          <div key={i} className="bg-white p-4 rounded-[24px] border border-slate-100 shadow-sm hover:shadow-md transition-shadow active:bg-slate-50">
+            <div className={`w-10 h-10 ${item.color} rounded-xl flex items-center justify-center text-xl mb-3`}>{item.icon}</div>
+            <h4 className="font-bold text-sm text-slate-700">{item.title}</h4>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// 2. 聊天组件 (核心：纠错卡片逻辑)
+const ChatPage = () => (
+  <div className="flex flex-col h-full bg-slate-50">
+    <div className="bg-white px-5 py-3 border-b border-slate-50 flex items-center gap-3">
+      <img src="https://i.pravatar.cc/100?u=4" className="w-9 h-9 rounded-full object-cover ring-2 ring-indigo-50" />
+      <div className="flex-1">
+        <h3 className="font-bold text-sm">Emma 老师</h3>
+        <span className="text-[10px] text-green-500 font-bold flex items-center gap-1">● 在线</span>
+      </div>
+    </div>
+
+    <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="flex gap-3">
+        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">AI</div>
+        <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm text-sm border border-slate-100 max-w-[80%] leading-relaxed text-slate-700">
+          你好！让我们开始练习自我介绍吧。你可以试着用一句话说说你的工作吗？
+        </div>
+      </div>
+
+      <div className="flex flex-col items-end">
+        <div className="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-none shadow-md text-sm max-w-[80%]">
+          I am working as a designer for 5 years.
+        </div>
+      </div>
+
+      {/* 纠错卡片 */}
+      <div className="flex gap-3 animate-in zoom-in-95 duration-300">
+        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+          <Wand2 size={16} />
+        </div>
+        <div className="flex-1 bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden">
+          <div className="bg-indigo-50/50 px-3 py-2 border-b border-indigo-50 flex justify-between items-center">
+            <span className="text-[10px] font-black text-indigo-700 uppercase">语法优化</span>
+            <span className="text-[10px] text-indigo-400">时态更正</span>
+          </div>
+          <div className="p-3 text-xs space-y-3">
+            <div className="flex gap-2">
+              <span className="text-red-400 font-bold text-[10px] mt-0.5">✕</span>
+              <p className="line-through text-slate-300">I am working...</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-green-500 font-bold text-[10px] mt-0.5">✓</span>
+              <p className="text-slate-700 font-bold bg-green-50 px-1 rounded">I have been working...</p>
+            </div>
+            <p className="pt-2 border-t border-slate-50 text-[10px] text-slate-400 italic">"现在完成进行时最适合描述持续至今的经历。"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// ================= 主应用入口 =================
+
+export default function App() {
+  const [currentTab, setCurrentTab] = useState('home');
+
+  return (
+    <div className="min-h-screen bg-slate-200 flex items-center justify-center p-10 font-sans">
+      <div className="w-[393px] h-[852px] bg-black rounded-[55px] p-3 shadow-2xl relative overflow-hidden border-[4px] border-slate-800">
+        {/* 灵动岛 */}
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-[20px] z-50"></div>
+        
+        <div className="w-full h-full bg-white rounded-[44px] overflow-hidden relative flex flex-col">
+          <StatusBar />
+          
+          <main className="flex-1 overflow-y-auto no-scrollbar">
+            {currentTab === 'home' ? <HomePage /> : <ChatPage />}
+          </main>
+
+          <TabBar activeTab={currentTab} />
+          
+          {/* 这里添加一个Tab切换测试逻辑 */}
+          <div className="absolute top-0 right-0 w-20 h-20 z-[60]" onClick={() => setCurrentTab(currentTab === 'home' ? 'chat' : 'home')}></div>
+        </div>
+      </div>
+    </div>
+  );
+}
